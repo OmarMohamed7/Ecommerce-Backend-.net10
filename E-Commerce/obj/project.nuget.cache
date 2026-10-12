@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "bDzGIQsSC84=",
+  "dgSpecHash": "CuSkcHBuVxM=",
   "success": true,
   "projectFilePath": "/Users/omohamed/Learning/backend/E-Commerce/E-Commerce/E-Commerce.csproj",
   "expectedPackageFiles": [
+    "/Users/omohamed/.nuget/packages/fluentvalidation/12.2.0/fluentvalidation.12.2.0.nupkg.sha512",
+    "/Users/omohamed/.nuget/packages/fluentvalidation.dependencyinjectionextensions/12.2.0/fluentvalidation.dependencyinjectionextensions.12.2.0.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/microsoft.aspnetcore.openapi/10.0.12/microsoft.aspnetcore.openapi.10.0.12.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg.sha512",

@@ -1,32 +1,38 @@
+using E_Commerce.Db;
 using E_Commerce.DTOs;
 using E_Commerce.Models;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce.Services;
 
-public class ProductService: IProductService
+public class ProductService(AppDbContext db) : IProductService
 {
-    private readonly List<Product> _products =
-    [
-        new Product { Id = 1, Name = "Screen", Description = "Full HD Screen", Stock = 100, Price = 5000 },
-        new Product { Id = 2, Name = "Laptop", Description = "Gaming Laptop", Stock = 100, Price = 35000 },
-        new Product { Id = 3, Name = "Laptop Charger", Description = "150 Watt Charger", Stock = 70, Price = 1800 },
-    ];
-
-    public IReadOnlyList<Product> GetAll() => _products;
-    
-    public Product? GetById(int id) => _products.FirstOrDefault(p => p.Id == id);
-
-    public Product Create(Product request)
+    public async Task<List<Product>> GetAll()
     {
-        _products.Add(request);
-        
+        return await db.Products
+            .AsNoTracking().ToListAsync();
+    }
+
+    public async Task<Product?> GetById(int id)
+    {
+        return await db.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+
+    public async Task<Product> Create(Product request)
+    {
+        db.Products.Add(request);
+
+        await db.SaveChangesAsync();
+
         return request;
     }
 
-    public Product? Update(int id, UpdateProductRequest request)
+    public async Task<Product?> Update(int id, UpdateProductRequest request)
     {
-        var product = GetById(id);
+        var product = await db.Products.FindAsync(id);
         if (product is null)
         {
             return null;
@@ -36,10 +42,21 @@ public class ProductService: IProductService
         product.Description = request.Description ?? product.Description;
         product.Price = request.Price ?? product.Price;
         product.Stock = request.Stock ?? product.Stock;
-        
+
+        await db.SaveChangesAsync();
+
         return product;
-        
     }
-    
-    public void Delete(int id) => _products.Remove(GetById(id));
+
+    public async Task<bool> Delete(int id)
+    {
+        var product = await GetById(id);
+
+        if (product is null) return false;
+
+        db.Products.Remove(product);
+        await db.SaveChangesAsync();
+
+        return true;
+    }
 }

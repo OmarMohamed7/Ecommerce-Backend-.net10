@@ -5,13 +5,12 @@ namespace E_Commerce.Services;
 
 public interface IProductService
 {
-    IReadOnlyList<Product> GetAll();
-    Product? GetById(int id);
-    
-    Product Create(Product request);
+    public Task<List<Product>> GetAll();
+    public Task<Product?> GetById(int id);
 
-    public Product? Update(int id, UpdateProductRequest request);
-    
-    public void Delete(int id);
+    public Task<Product> Create(Product request);
 
+    public Task<Product?> Update(int id, UpdateProductRequest request);
+
+    public Task<bool> Delete(int id);
 }
