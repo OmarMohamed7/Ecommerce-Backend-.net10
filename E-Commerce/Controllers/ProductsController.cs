@@ -42,8 +42,7 @@ public class ProductsController(IProductService productService) : ControllerBase
                 int id,
                 [FromBody] UpdateProductRequest request)
         {
-              
-
+                
                 var res = productService.Update(id, request);
                 
                 if(res is null) return NotFound();
