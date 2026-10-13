@@ -1,3 +1,4 @@
+using AutoMapper;
 using E_Commerce.DTOs;
 using E_Commerce.Extensions;
 using E_Commerce.Models;
@@ -11,13 +12,15 @@ namespace E_Commerce.Controllers;
 [ApiController]
 public class ProductsController(
     IProductService productService,
+    IMapper mapper,
     IValidator<CreateProductDto> createValidator,
     IValidator<UpdateProductRequest> updateValidator) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetProducts()
     {
-        return Ok(ApiResponse<List<Product>>.Ok(await productService.GetAll()));
+        var list = (await productService.GetAll()).ToList();
+        return Ok(ApiResponse<List<Product>>.Ok(list));
     }
 
     [HttpGet("{id:int}")]
@@ -35,17 +38,12 @@ public class ProductsController(
         var validationResult = await createValidator.ValidateAsync(productDto);
         if (!validationResult.IsValid) return BadRequest(ApiResponse<Product>.Fail(validationResult.ToApiErrors()));
 
-        var product = new Product
-        {
-            Name = productDto.Name,
-            Price = productDto.Price,
-            Stock = productDto.Stock,
-            Description = productDto.Description
-        };
+        var product = mapper.Map<Product>(productDto);
 
-        var res = await productService.Create(product);
+        var createdProduct = await productService.Create(product);
 
-        return CreatedAtAction(nameof(GetProduct), new { id = res.Id }, ApiResponse<Product>.Ok(res));
+        return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id },
+            ApiResponse<Product>.Ok(createdProduct));
     }
 
     [HttpPatch("{id:int}")]
@@ -71,13 +69,14 @@ public class ProductsController(
 
         var res = await productService.Delete(id);
 
-        if (res)
-        {
-            return NoContent();
-        }
-        else
-        {
-            return NotFound(ApiResponse<object>.Fail("Product not found."));
-        }
+        if (res) return NoContent();
+
+        return NotFound(ApiResponse<object>.Fail("Product not found."));
+    }
+
+    [HttpGet("test-error")]
+    public IActionResult TestError()
+    {
+        throw new Exception(" Test Error");
     }
 }

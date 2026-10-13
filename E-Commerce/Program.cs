@@ -1,4 +1,6 @@
 using E_Commerce.Db;
+using E_Commerce.Mapper;
+using E_Commerce.Middleware;
 using E_Commerce.Services;
 using E_Commerce.Validators;
 using FluentValidation;
@@ -23,12 +25,18 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>(
 // Add a scoped service for products (must be scoped because it depends on the scoped AppDbContext)
 builder.Services.AddScoped<IProductService, ProductService>();
 
+builder.Services.AddAutoMapper(
+    cfg => { },
+    typeof(ProductProfile));
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

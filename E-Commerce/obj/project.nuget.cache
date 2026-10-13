@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "CuSkcHBuVxM=",
+  "dgSpecHash": "Pr72OM1in0M=",
   "success": true,
   "projectFilePath": "/Users/omohamed/Learning/backend/E-Commerce/E-Commerce/E-Commerce.csproj",
   "expectedPackageFiles": [
+    "/Users/omohamed/.nuget/packages/automapper/16.2.0/automapper.16.2.0.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/fluentvalidation/12.2.0/fluentvalidation.12.2.0.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/fluentvalidation.dependencyinjectionextensions/12.2.0/fluentvalidation.dependencyinjectionextensions.12.2.0.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
@@ -21,6 +22,10 @@
     "/Users/omohamed/.nuget/packages/microsoft.entityframeworkcore.design/10.0.12/microsoft.entityframeworkcore.design.10.0.12.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/microsoft.entityframeworkcore.relational/10.0.12/microsoft.entityframeworkcore.relational.10.0.12.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/microsoft.extensions.dependencymodel/10.0.12/microsoft.extensions.dependencymodel.10.0.12.nupkg.sha512",
+    "/Users/omohamed/.nuget/packages/microsoft.identitymodel.abstractions/8.14.0/microsoft.identitymodel.abstractions.8.14.0.nupkg.sha512",
+    "/Users/omohamed/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.14.0/microsoft.identitymodel.jsonwebtokens.8.14.0.nupkg.sha512",
+    "/Users/omohamed/.nuget/packages/microsoft.identitymodel.logging/8.14.0/microsoft.identitymodel.logging.8.14.0.nupkg.sha512",
+    "/Users/omohamed/.nuget/packages/microsoft.identitymodel.tokens/8.14.0/microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/microsoft.openapi/2.12.0/microsoft.openapi.2.12.0.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/microsoft.visualstudio.solutionpersistence/1.0.52/microsoft.visualstudio.solutionpersistence.1.0.52.nupkg.sha512",
     "/Users/omohamed/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",

@@ -25,4 +25,18 @@ public sealed record ApiResponse<T>(
     }
 }
 
+// Non-generic helpers for responses that carry no data (errors from middleware, etc.)
+public static class ApiResponse
+{
+    public static ApiResponse<object> Fail(string message)
+    {
+        return ApiResponse<object>.Fail(message);
+    }
+
+    public static ApiResponse<object> Fail(params ApiError[] errors)
+    {
+        return ApiResponse<object>.Fail(errors);
+    }
+}
+
 public sealed record ApiError(string? Field, string Message);

@@ -7,7 +7,7 @@ namespace E_Commerce.Services;
 
 public class ProductService(AppDbContext db) : IProductService
 {
-    public async Task<List<Product>> GetAll()
+    public async Task<IEnumerable<Product>> GetAll()
     {
         return await db.Products
             .AsNoTracking().ToListAsync();
@@ -33,10 +33,7 @@ public class ProductService(AppDbContext db) : IProductService
     public async Task<Product?> Update(int id, UpdateProductRequest request)
     {
         var product = await db.Products.FindAsync(id);
-        if (product is null)
-        {
-            return null;
-        }
+        if (product is null) return null;
 
         product.Name = request.Name ?? product.Name;
         product.Description = request.Description ?? product.Description;

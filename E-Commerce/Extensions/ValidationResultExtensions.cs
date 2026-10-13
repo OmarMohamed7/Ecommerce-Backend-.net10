@@ -7,8 +7,6 @@ public static class ValidationResultExtensions
 {
     public static ApiError[] ToApiErrors(this ValidationResult result)
     {
-        return result.Errors
-            .Select(e => new ApiError(e.PropertyName, e.ErrorMessage))
-            .ToArray();
+        return [.. result.Errors.Select(e => new ApiError(e.PropertyName, e.ErrorMessage))];
     }
 }
