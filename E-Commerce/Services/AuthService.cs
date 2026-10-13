@@ -5,12 +5,14 @@ using E_Commerce.Db;
 using E_Commerce.DTOs;
 using E_Commerce.Models;
 using E_Commerce.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace E_Commerce.Services;
 
-public class AuthService(AppDbContext db, IConfiguration configuration) : IAuthService
+public class AuthService(AppDbContext db, IConfiguration configuration, IPasswordHasher<User> passwordHasher)
+    : IAuthService
 {
     public async Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto)
     {
@@ -19,9 +21,10 @@ public class AuthService(AppDbContext db, IConfiguration configuration) : IAuthS
         var user = new User
         {
             Email = registerDto.Email,
-            Name = registerDto.Name,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password)
+            Name = registerDto.Name
         };
+        user.PasswordHash = passwordHasher.HashPassword(user, registerDto.Password);
+
 
         var (token, expiresAt) = GenerateJwtToken(user);
 
@@ -47,10 +50,10 @@ public class AuthService(AppDbContext db, IConfiguration configuration) : IAuthS
 
         if (user == null) return null;
 
-        var isPasswordValid =
-            BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+        var passwordVerificationResult =
+            passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
 
-        if (!isPasswordValid) return null;
+        if (passwordVerificationResult == PasswordVerificationResult.Failed) return null;
 
 
         var (token, expiresAt) = GenerateJwtToken(user);

@@ -58,7 +58,9 @@ Secrets are not stored in `appsettings*.json` (they contain placeholders). Set t
 ```bash
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5433;Database=Ecommerce;Username=postgres;Password=<your POSTGRES_PASSWORD>"
 dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 32)"
-```
+dotnet user-secrets set "Admin:Name" "System Admin" && \
+dotnet user-secrets set "Admin:Email" "admin@admin.com" && \
+dotnet user-secrets set "Admin:Password" "StrongRandomPassword123!"```
 
 User-secrets are only loaded when `ASPNETCORE_ENVIRONMENT=Development`, which the launch profiles already set. For production, provide the same keys as environment variables (`ConnectionStrings__DefaultConnection`, `Jwt__Key`).
 

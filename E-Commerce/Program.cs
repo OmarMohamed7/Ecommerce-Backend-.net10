@@ -2,11 +2,13 @@ using System.Text;
 using E_Commerce.Db;
 using E_Commerce.Mapper;
 using E_Commerce.Middleware;
+using E_Commerce.Models;
 using E_Commerce.Services;
 using E_Commerce.Services.Interfaces;
 using E_Commerce.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -30,8 +32,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>();
 
 // Add a scoped service for products (must be scoped because it depends on the scoped AppDbContext)
-builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -79,6 +82,8 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
+
+await DbSeeder.SeedAdminASync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

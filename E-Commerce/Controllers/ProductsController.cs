@@ -34,7 +34,7 @@ public class ProductsController(
             : Ok(ApiResponse<Product>.Ok(product));
     }
 
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     [HttpPost]
     public async Task<IActionResult> PostProduct([FromBody] CreateProductDto productDto)
     {
@@ -49,7 +49,7 @@ public class ProductsController(
             ApiResponse<Product>.Ok(createdProduct));
     }
 
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     [HttpPatch("{id:int}")]
     public async Task<IActionResult> UpdateProduct(
         int id,
@@ -65,7 +65,7 @@ public class ProductsController(
         return Ok(ApiResponse<Product>.Ok(res));
     }
 
-    [Authorize]
+    [Authorize(Roles = Roles.Admin)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
