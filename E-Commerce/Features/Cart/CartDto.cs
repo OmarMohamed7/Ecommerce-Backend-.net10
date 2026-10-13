@@ -6,9 +6,8 @@ public class CartDto
 
     public List<CartItemDto> Items { get; set; } = [];
 
-    public decimal Price { get; set; }
+    // Derived from the items so they can never go stale
+    public int Quantity => Items.Sum(i => i.Quantity);
 
-    public int Quantity { get; set; } = 0;
-
-    public decimal Total { get; set; } = 0;
+    public decimal Total => Items.Sum(i => i.Total);
 }

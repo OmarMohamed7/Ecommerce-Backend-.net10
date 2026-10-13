@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using E_Commerce.Common;
+using E_Commerce.Extensions;
 using E_Commerce.Features.Auth;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +11,10 @@ namespace E_Commerce.Features.Cart;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CartController(ICartService cartService) : ControllerBase
+public class CartController(
+    ICartService cartService,
+    IValidator<AddToCartDto> addValidator,
+    IValidator<UpdateCartItemDto> updateValidator) : ControllerBase
 {
     [Authorize(Roles = Roles.Admin)]
     [HttpGet("All")]
@@ -17,7 +22,7 @@ public class CartController(ICartService cartService) : ControllerBase
     {
         var carts = await cartService.GetAllCarts(queryParams);
 
-        return Ok(ApiResponse<PagedResult<Cart>>.Ok(carts));
+        return Ok(ApiResponse<PagedResult<CartDto>>.Ok(carts));
     }
 
     [HttpGet]
@@ -32,6 +37,10 @@ public class CartController(ICartService cartService) : ControllerBase
     [HttpPost("items")]
     public async Task<IActionResult> AddItem([FromBody] AddToCartDto addToCartDto)
     {
+        var validationResult = await addValidator.ValidateAsync(addToCartDto);
+        if (!validationResult.IsValid)
+            return BadRequest(ApiResponse<CartDto>.Fail(validationResult.ToApiErrors()));
+
         var userId = GetCurrentUserId();
 
         var res = await cartService.AddToCartAsync(userId, addToCartDto);
@@ -42,6 +51,10 @@ public class CartController(ICartService cartService) : ControllerBase
     [HttpPut("items/{productId}")]
     public async Task<IActionResult> UpdateItem(int productId, [FromBody] UpdateCartItemDto updateCartItemDto)
     {
+        var validationResult = await updateValidator.ValidateAsync(updateCartItemDto);
+        if (!validationResult.IsValid)
+            return BadRequest(ApiResponse<CartDto>.Fail(validationResult.ToApiErrors()));
+
         var userId = GetCurrentUserId();
 
         var cart = await cartService.UpdateCartItemAsync(userId, productId, updateCartItemDto);

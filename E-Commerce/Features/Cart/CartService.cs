@@ -15,9 +15,8 @@ public class CartService(AppDbContext db, IMapper mapper) : ICartService
 
     public async Task<CartDto> AddToCartAsync(int userId, AddToCartDto dto)
     {
-        var productExists = await db.Products.AnyAsync(x => x.Id == userId);
-        if (!productExists)
-            throw new KeyNotFoundException("Product not found");
+        var product = await db.Products.FindAsync(dto.ProductId)
+                      ?? throw new KeyNotFoundException("Product not found");
 
         var cart = await GetOrCreateCartAsync(userId);
 
@@ -26,9 +25,11 @@ public class CartService(AppDbContext db, IMapper mapper) : ICartService
         if (existingItem != null)
             existingItem.Quantity += dto.Quantity;
         else
+            // Set Product too so the response can show its name and price
             cart.Items.Add(new CartItem
                 {
-                    ProductId = dto.ProductId,
+                    ProductId = product.Id,
+                    Product = product,
                     Quantity = dto.Quantity
                 }
             );
@@ -58,7 +59,7 @@ public class CartService(AppDbContext db, IMapper mapper) : ICartService
         return true;
     }
 
-    public async Task<PagedResult<Cart>> GetAllCarts(CartQueryParams queryParams)
+    public async Task<PagedResult<CartDto>> GetAllCarts(CartQueryParams queryParams)
     {
         var carts = await db.Cart
             .AsNoTracking()
@@ -71,8 +72,8 @@ public class CartService(AppDbContext db, IMapper mapper) : ICartService
 
         var totalCount = await db.Cart.CountAsync();
 
-        return new PagedResult<Cart>(carts, totalCount, queryParams.Page, queryParams.PageSize);
-        ;
+        return new PagedResult<CartDto>(mapper.Map<List<CartDto>>(carts), totalCount, queryParams.Page,
+            queryParams.PageSize);
     }
 
 
