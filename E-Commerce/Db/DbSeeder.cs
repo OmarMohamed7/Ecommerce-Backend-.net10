@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace E_Commerce.Db;
 
+// A DB Seeder (Database Seeder) is code that automatically inserts initial or predefined data into your database.
 public static class DbSeeder
 {
     public static async Task SeedAdminASync(IServiceProvider serviceProvider)
