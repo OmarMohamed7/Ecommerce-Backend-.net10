@@ -1,6 +1,6 @@
 namespace E_Commerce.DTOs;
 
-public sealed record RegisterRequest(
+public sealed record RegisterDto(
     string Name,
     string Email,
     string Password,

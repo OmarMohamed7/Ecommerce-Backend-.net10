@@ -4,6 +4,7 @@ using E_Commerce.Extensions;
 using E_Commerce.Models;
 using E_Commerce.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Commerce.Controllers;
@@ -16,12 +17,14 @@ public class ProductsController(
     IValidator<CreateProductDto> createValidator,
     IValidator<UpdateProductRequest> updateValidator) : ControllerBase
 {
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetProducts([FromQuery] ProductQueryParams queryParams)
     {
         return Ok(ApiResponse<PagedResult<Product>>.Ok(await productService.GetAll(queryParams)));
     }
 
+    [Authorize]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetProduct(int id)
     {
@@ -31,6 +34,7 @@ public class ProductsController(
             : Ok(ApiResponse<Product>.Ok(product));
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> PostProduct([FromBody] CreateProductDto productDto)
     {
@@ -45,6 +49,7 @@ public class ProductsController(
             ApiResponse<Product>.Ok(createdProduct));
     }
 
+    [Authorize]
     [HttpPatch("{id:int}")]
     public async Task<IActionResult> UpdateProduct(
         int id,
@@ -60,6 +65,7 @@ public class ProductsController(
         return Ok(ApiResponse<Product>.Ok(res));
     }
 
+    [Authorize]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {

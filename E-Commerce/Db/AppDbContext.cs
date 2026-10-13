@@ -14,5 +14,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<Product>().HasIndex(p => p.Price);
         modelBuilder.Entity<Product>().HasIndex(p => p.Name);
         modelBuilder.Entity<Product>().HasIndex(p => p.Stock);
+
+        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
     }
 }
