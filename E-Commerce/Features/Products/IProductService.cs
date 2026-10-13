@@ -1,4 +1,3 @@
-using E_Commerce.Models;
 using E_Commerce.Common;
 
 namespace E_Commerce.Features.Products;

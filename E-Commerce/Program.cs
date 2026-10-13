@@ -1,7 +1,6 @@
 using System.Text;
 using E_Commerce.Db;
 using E_Commerce.Middleware;
-using E_Commerce.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

@@ -1,5 +1,6 @@
-using E_Commerce.Models;
 using Microsoft.EntityFrameworkCore;
+using E_Commerce.Features.Auth;
+using E_Commerce.Features.Products;
 
 namespace E_Commerce.Db;
 

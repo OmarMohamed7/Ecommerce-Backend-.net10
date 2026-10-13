@@ -1,5 +1,4 @@
 using AutoMapper;
-using E_Commerce.Models;
 
 namespace E_Commerce.Features.Products;
 

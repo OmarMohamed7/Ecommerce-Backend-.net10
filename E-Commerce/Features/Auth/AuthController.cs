@@ -1,5 +1,4 @@
 using E_Commerce.Extensions;
-using E_Commerce.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using E_Commerce.Common;

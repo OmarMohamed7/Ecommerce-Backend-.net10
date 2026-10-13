@@ -1,4 +1,4 @@
-namespace E_Commerce.Models;
+namespace E_Commerce.Features.Auth;
 
 public class User
 {

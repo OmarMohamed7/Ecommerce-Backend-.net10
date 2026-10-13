@@ -1,10 +1,10 @@
 using AutoMapper;
 using E_Commerce.Extensions;
-using E_Commerce.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using E_Commerce.Common;
+using E_Commerce.Features.Auth;
 
 namespace E_Commerce.Features.Products;
 

@@ -1,5 +1,5 @@
-using E_Commerce.Models;
 using Microsoft.AspNetCore.Identity;
+using E_Commerce.Features.Auth;
 
 namespace E_Commerce.Db;
 

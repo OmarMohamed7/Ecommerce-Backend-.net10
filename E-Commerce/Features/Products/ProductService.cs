@@ -1,5 +1,4 @@
 using E_Commerce.Db;
-using E_Commerce.Models;
 using Microsoft.EntityFrameworkCore;
 using E_Commerce.Common;
 
