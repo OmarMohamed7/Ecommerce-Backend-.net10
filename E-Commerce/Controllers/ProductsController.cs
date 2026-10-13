@@ -17,10 +17,9 @@ public class ProductsController(
     IValidator<UpdateProductRequest> updateValidator) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetProducts()
+    public async Task<IActionResult> GetProducts([FromQuery] ProductQueryParams queryParams)
     {
-        var list = (await productService.GetAll()).ToList();
-        return Ok(ApiResponse<List<Product>>.Ok(list));
+        return Ok(ApiResponse<PagedResult<Product>>.Ok(await productService.GetAll(queryParams)));
     }
 
     [HttpGet("{id:int}")]

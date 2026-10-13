@@ -7,10 +7,46 @@ namespace E_Commerce.Services;
 
 public class ProductService(AppDbContext db) : IProductService
 {
-    public async Task<IEnumerable<Product>> GetAll()
+    public async Task<PagedResult<Product>> GetAll(ProductQueryParams queryParams)
     {
-        return await db.Products
-            .AsNoTracking().ToListAsync();
+        var query = db.Products.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(queryParams.Search))
+            query = query.Where(p => EF.Functions.ILike(p.Name, $"%{queryParams.Search}%"));
+
+        if (queryParams.MinPrice.HasValue) query = query.Where(p => p.Price >= queryParams.MinPrice);
+
+        if (queryParams.MaxPrice.HasValue) query = query.Where(p => p.Price <= queryParams.MaxPrice);
+
+        if (queryParams.MinQuantity.HasValue) query = query.Where(p => p.Stock >= queryParams.MinQuantity);
+
+        if (queryParams.MaxQuantity.HasValue) query = query.Where(p => p.Stock <= queryParams.MaxQuantity);
+
+        var totalCount = await query.CountAsync();
+
+
+        var ordered = queryParams.SortBy.ToLowerInvariant() switch
+        {
+            "price" => queryParams.Descending
+                ? query.OrderByDescending(p => p.Price)
+                : query.OrderBy(p => p.Price),
+            "stock" => queryParams.Descending
+                ? query.OrderByDescending(p => p.Stock)
+                : query.OrderBy(p => p.Stock),
+            "name" => queryParams.Descending
+                ? query.OrderByDescending(p => p.Name)
+                : query.OrderBy(p => p.Name),
+            _ => queryParams.Descending
+                ? query.OrderByDescending(p => p.Id)
+                : query.OrderBy(p => p.Id)
+        };
+
+        var items = await ordered
+            .Skip((queryParams.Page - 1) * queryParams.PageSize)
+            .Take(queryParams.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<Product>(items, totalCount, queryParams.Page, queryParams.PageSize);
     }
 
     public async Task<Product?> GetById(int id)

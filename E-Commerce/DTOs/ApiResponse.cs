@@ -25,6 +25,11 @@ public sealed record ApiResponse<T>(
     }
 }
 
+public sealed record PagedResult<T>(IReadOnlyList<T> Items, int TotalCount, int Page, int PageSize)
+{
+    public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
+}
+
 // Non-generic helpers for responses that carry no data (errors from middleware, etc.)
 public static class ApiResponse
 {

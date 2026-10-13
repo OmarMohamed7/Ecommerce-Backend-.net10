@@ -5,7 +5,7 @@ namespace E_Commerce.Services;
 
 public interface IProductService
 {
-    public Task<IEnumerable<Product>> GetAll();
+    public Task<PagedResult<Product>> GetAll(ProductQueryParams queryParams);
     public Task<Product?> GetById(int id);
 
     public Task<Product> Create(Product request);
