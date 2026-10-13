@@ -1,13 +1,12 @@
 using AutoMapper;
-using E_Commerce.DTOs;
 using E_Commerce.Extensions;
 using E_Commerce.Models;
-using E_Commerce.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using E_Commerce.Common;
 
-namespace E_Commerce.Controllers;
+namespace E_Commerce.Features.Products;
 
 [Route("api/[controller]")]
 [ApiController]

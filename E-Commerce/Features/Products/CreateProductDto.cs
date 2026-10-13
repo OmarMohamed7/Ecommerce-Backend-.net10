@@ -1,4 +1,4 @@
-namespace E_Commerce.DTOs;
+namespace E_Commerce.Features.Products;
 
 public sealed record CreateProductDto(
     string Name,

@@ -1,17 +1,15 @@
 using System.Text;
 using E_Commerce.Db;
-using E_Commerce.Mapper;
 using E_Commerce.Middleware;
 using E_Commerce.Models;
-using E_Commerce.Services;
-using E_Commerce.Services.Interfaces;
-using E_Commerce.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using E_Commerce.Features.Auth;
+using E_Commerce.Features.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 

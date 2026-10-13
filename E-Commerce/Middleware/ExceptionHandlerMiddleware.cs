@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using E_Commerce.DTOs;
+using E_Commerce.Common;
 
 namespace E_Commerce.Middleware;
 

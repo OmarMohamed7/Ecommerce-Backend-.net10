@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace E_Commerce.DTOs;
+namespace E_Commerce.Common;
 
 public sealed record ApiResponse<T>(
     bool Success,

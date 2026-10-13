@@ -2,14 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using E_Commerce.Db;
-using E_Commerce.DTOs;
 using E_Commerce.Models;
-using E_Commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace E_Commerce.Services;
+namespace E_Commerce.Features.Auth;
 
 public class AuthService(AppDbContext db, IConfiguration configuration, IPasswordHasher<User> passwordHasher)
     : IAuthService

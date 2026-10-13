@@ -1,6 +1,5 @@
-using E_Commerce.DTOs;
 
-namespace E_Commerce.Services.Interfaces;
+namespace E_Commerce.Features.Auth;
 
 public interface IAuthService
 {

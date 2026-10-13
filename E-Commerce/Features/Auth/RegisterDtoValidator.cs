@@ -1,7 +1,6 @@
-using E_Commerce.DTOs;
 using FluentValidation;
 
-namespace E_Commerce.Validators;
+namespace E_Commerce.Features.Auth;
 
 public sealed class RegisterDtoValidator : AbstractValidator<RegisterDto>
 {

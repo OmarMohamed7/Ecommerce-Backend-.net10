@@ -1,7 +1,7 @@
-using E_Commerce.DTOs;
 using E_Commerce.Models;
+using E_Commerce.Common;
 
-namespace E_Commerce.Services;
+namespace E_Commerce.Features.Products;
 
 public interface IProductService
 {

@@ -1,4 +1,4 @@
-namespace E_Commerce.DTOs;
+namespace E_Commerce.Features.Auth;
 
 public sealed record RegisterDto(
     string Name,

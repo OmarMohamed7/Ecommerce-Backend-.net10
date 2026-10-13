@@ -1,9 +1,9 @@
 using E_Commerce.Db;
-using E_Commerce.DTOs;
 using E_Commerce.Models;
 using Microsoft.EntityFrameworkCore;
+using E_Commerce.Common;
 
-namespace E_Commerce.Services;
+namespace E_Commerce.Features.Products;
 
 public class ProductService(AppDbContext db) : IProductService
 {
