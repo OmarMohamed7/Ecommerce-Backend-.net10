@@ -1,5 +1,6 @@
 using System.Text;
 using E_Commerce.Db;
+using E_Commerce.Features.Audit;
 using E_Commerce.Features.Auth;
 using E_Commerce.Features.Cart;
 using E_Commerce.Features.Products;
@@ -21,9 +22,15 @@ builder.Services.AddControllers(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
 // Register a db context
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddScoped<AuditInterceptor>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
 });
 
 // This picks up every validator
@@ -41,6 +48,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
+    options.Events = new ApiJwtBearerEvents();
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,

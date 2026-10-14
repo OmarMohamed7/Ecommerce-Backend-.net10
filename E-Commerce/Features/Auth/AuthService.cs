@@ -23,11 +23,11 @@ public class AuthService(AppDbContext db, IConfiguration configuration, IPasswor
         user.PasswordHash = passwordHasher.HashPassword(user, registerDto.Password);
 
 
-        var (token, expiresAt) = GenerateJwtToken(user);
-
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
+        // Generate after saving so the token carries the real user id
+        var (token, expiresAt) = GenerateJwtToken(user);
 
         return new AuthResponseDto
         {
