@@ -3,6 +3,7 @@ using E_Commerce.Db;
 using E_Commerce.Features.Audit;
 using E_Commerce.Features.Auth;
 using E_Commerce.Features.Cart;
+using E_Commerce.Features.Order;
 using E_Commerce.Features.Products;
 using E_Commerce.Middleware;
 using FluentValidation;
@@ -41,6 +42,8 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+
 
 builder.Services.AddAuthentication(options =>
 {

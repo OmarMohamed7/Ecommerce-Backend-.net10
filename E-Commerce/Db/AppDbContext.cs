@@ -1,6 +1,7 @@
 using E_Commerce.Features.Audit;
 using E_Commerce.Features.Auth;
 using E_Commerce.Features.Cart;
+using E_Commerce.Features.Order;
 using E_Commerce.Features.Products;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Cart> Cart => Set<Cart>();
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +38,26 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<CartItem>()
             .HasIndex(ci => new { ci.CartId, ci.ProductId })
             .IsUnique();
+
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.Items)
+            .WithOne() // no back navigation
+            .HasForeignKey(i => i.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // For Computed Value
+        modelBuilder.Entity<OrderItem>()
+            .Property(i => i.TotalPrice)
+            .HasComputedColumnSql("\"Quantity\" * \"UnitPrice\"", true)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<OrderItem>().HasIndex(i => i.TotalPrice);
+
+        modelBuilder.Entity<OrderItem>()
+            .HasOne<Product>()
+            .WithMany()
+            .HasForeignKey(i => i.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // modelBuilder.Entity<Cart>().HasOne(c => c.User)
         //     .WithOne()

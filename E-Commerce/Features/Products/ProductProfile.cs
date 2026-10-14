@@ -1,5 +1,6 @@
 using AutoMapper;
 using E_Commerce.Features.Cart;
+using E_Commerce.Features.Order;
 
 namespace E_Commerce.Features.Products;
 
@@ -18,5 +19,8 @@ public class ProductProfile : Profile
         CreateMap<Cart.Cart, CartDto>()
             .ForMember(dest => dest.CartId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+        CreateMap<OrderItem, OrderItemDto>();
+        CreateMap<Order.Order, OrderDto>();
     }
 }
