@@ -1,4 +1,6 @@
 using System.Text;
+using E_Commerce.Cache;
+using E_Commerce.Common;
 using E_Commerce.Db;
 using E_Commerce.Features.Audit;
 using E_Commerce.Features.Auth;
@@ -15,7 +17,30 @@ using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
+// Load .env first so its values are part of the configuration
+DotEnv.Load();
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Fail fast with a clear message instead of running with a missing or placeholder secret
+foreach (var required in new[]
+         {
+             "ConnectionStrings:DefaultConnection", "ConnectionStrings:Redis", "Jwt:Key", "Admin:Password"
+         })
+{
+    var value = builder.Configuration[required];
+
+    if (string.IsNullOrWhiteSpace(value))
+        throw new InvalidOperationException(
+            $"Configuration '{required}' is missing. Copy .env.example to .env and fill it in.");
+
+    if (value.Contains("CHANGE_ME"))
+        throw new InvalidOperationException(
+            $"Configuration '{required}' still contains the CHANGE_ME placeholder. Edit your .env.");
+}
+
+if (builder.Configuration["Jwt:Key"]!.Length < 32)
+    throw new InvalidOperationException("Jwt__Key must be at least 32 characters.");
 
 // Logger
 builder.Host.UseSerilog((context, services, configuration) =>
@@ -31,6 +56,7 @@ builder.Host.UseSerilog((context, services, configuration) =>
             retainedFileCountLimit: 14,
             shared: true);
 });
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -38,11 +64,20 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "ECommerce";
+});
+
 // Register a db context
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<AuditInterceptor>();
 builder.Services.AddScoped<IAuditService, AuditService>();
+
+// Cache Service
+builder.Services.AddSingleton<CacheService>();
 
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {

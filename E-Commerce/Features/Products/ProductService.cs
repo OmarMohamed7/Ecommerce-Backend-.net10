@@ -1,14 +1,23 @@
+using E_Commerce.Cache;
 using E_Commerce.Common;
 using E_Commerce.Db;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce.Features.Products;
 
-public class ProductService(AppDbContext db, ILogger<ProductService> logger) : IProductService
+public class ProductService(AppDbContext db, ILogger<ProductService> logger, CacheService _cache) : IProductService
 {
     public async Task<PagedResult<Product>> GetAll(ProductQueryParams queryParams)
     {
         logger.LogInformation("Getting all products for {ProductQueryParams}", queryParams);
+
+        // Getting From cache
+        var cacheKey = ProductsRedisKeys.Products(queryParams);
+        var cachedProducts = await _cache.GetFromCacheAsync<PagedResult<Product>>(cacheKey);
+        if (cachedProducts is not null) return cachedProducts;
+
+        logger.LogInformation("Cache Miss For Products");
+
         var query = db.Products.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(queryParams.Search))
@@ -46,7 +55,12 @@ public class ProductService(AppDbContext db, ILogger<ProductService> logger) : I
             .Take(queryParams.PageSize)
             .ToListAsync();
 
-        return new PagedResult<Product>(items, totalCount, queryParams.Page, queryParams.PageSize);
+        var res = new PagedResult<Product>(items, totalCount, queryParams.Page, queryParams.PageSize);
+
+        // Set Cache
+        await _cache.SetCacheAsync(cacheKey, res, TimeSpan.FromMinutes(5));
+
+        return res;
     }
 
     public async Task<Product?> GetById(int id)

@@ -35,56 +35,41 @@ E-Commerce/
 - Docker (for PostgreSQL)
 - `dotnet-ef` tool: `dotnet tool install --global dotnet-ef`
 
-### 1. Start the database
+### 1. Create your `.env`
 
-Create a `.env` file next to `E-Commerce/compose.yaml` (it is git-ignored):
-
-```
-POSTGRES_PASSWORD=choose-a-password
-```
-
-Then, from the `E-Commerce/` project folder:
+All settings and secrets live in one git-ignored file, `E-Commerce/.env`. The app reads it at startup and docker compose
+reads it too. Start from the committed template:
 
 ```bash
-docker compose up -d
+cd E-Commerce
+cp .env.example .env
 ```
 
-PostgreSQL is exposed on `localhost:5433`, database `Ecommerce`, user `postgres`.
+Open `.env` and replace every `CHANGE_ME`:
 
-### 2. Configure secrets
+| Key                                   | What to put                                                                        |
+|---------------------------------------|------------------------------------------------------------------------------------|
+| `POSTGRES_PASSWORD`, `REDIS_PASSWORD` | Any passwords (letters and numbers only). The connection strings below reuse them. |
+| `Jwt__Key`                            | A random string of at least 32 characters: `openssl rand -base64 32`               |
+| `Admin__Email`, `Admin__Password`     | The first admin account, created at the first startup                              |
 
-Secrets are not stored in `appsettings*.json` (they contain placeholders). Set them with user-secrets from the `E-Commerce/` project folder:
+A double underscore is a colon in the app's configuration (`Jwt__Key` is `Jwt:Key`). A real environment variable with
+the same name always wins over `.env`, which is how you configure a server. The app refuses to start, and says which
+value, if a required one is missing or still contains `CHANGE_ME`. Never commit `.env`.
 
-```bash
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5433;Database=Ecommerce;Username=postgres;Password=<your POSTGRES_PASSWORD>"
-dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 32)"
-dotnet user-secrets set "Admin:Name" "System Admin" && \
-dotnet user-secrets set "Admin:Email" "admin@admin.com" && \
-dotnet user-secrets set "Admin:Password" "StrongRandomPassword123!"```
-
-User-secrets are only loaded when `ASPNETCORE_ENVIRONMENT=Development`, which the launch profiles already set. For production, provide the same keys as environment variables (`ConnectionStrings__DefaultConnection`, `Jwt__Key`).
-
-Other JWT settings live in `appsettings.json`: `Jwt:Issuer`, `Jwt:Audience`, `Jwt:ExpiresInMinutes`.
-
-### 3. Apply migrations
+### 2. Start PostgreSQL and Redis
 
 ```bash
-ASPNETCORE_ENVIRONMENT=Development dotnet ef database update
+docker compose up -d --wait
 ```
 
-Run `ef` commands with `ASPNETCORE_ENVIRONMENT=Development`, otherwise the user-secrets are not loaded. After changing a model, create a migration with `dotnet ef migrations add <Name>` and apply it with `dotnet ef database update`.
+PostgreSQL is on `localhost:5433` (database `Ecommerce`, user `postgres`) and Redis on `localhost:6379`. Both need their
+password from `.env`.
 
-### 4. (Optional) Seed sample products
-
-Inserts a random 50 to 100 products:
-
-```bash
-psql -h localhost -p 5433 -U postgres -d Ecommerce -f Scripts/seed-products.sql
-```
-
-### 5. Run
+### 3. Apply migrations and run
 
 ```bash
+dotnet ef database update
 dotnet run --launch-profile https
 ```
 
@@ -92,6 +77,30 @@ dotnet run --launch-profile https
 - Swagger UI: `https://localhost:7180/swagger`
 
 Use the `https` address. Plain `http://localhost:5133` redirects to https, and browsers block the redirected POST from Swagger.
+
+After changing a model, create a migration with `dotnet ef migrations add <Name>` and apply it with
+`dotnet ef database update`. Log in with `Admin__Email` and `Admin__Password` through `POST /api/auth/login`.
+
+Other JWT settings live in `appsettings.json`: `Jwt:Issuer`, `Jwt:Audience`, `Jwt:ExpiresInMinutes`.
+
+### Optional: seed sample products
+
+Inserts a random 50 to 100 products (it asks for the Postgres password):
+
+```bash
+psql -h localhost -p 5433 -U postgres -d Ecommerce -f Scripts/seed-products.sql
+```
+
+### Troubleshooting
+
+| Problem                                                                        | Fix                                                                                                                                        |
+|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `Configuration '...' is missing` or `still contains the CHANGE_ME placeholder` | Fix that value in `.env`                                                                                                                   |
+| `NOAUTH Authentication required`                                               | The password in `ConnectionStrings__Redis` does not match `REDIS_PASSWORD`. Fix `.env`, then `docker compose up -d --force-recreate redis` |
+| `password authentication failed`                                               | The Postgres volume keeps the first password. Change it in Postgres, or `docker compose down -v` (deletes the data)                        |
+| A changed value has no effect                                                  | Restart the app (`.env` is read once). Also check that no shell or IDE environment variable with the same name overrides it                |
+| 401 on every request                                                           | Token missing or expired (60 minutes). Changing `Jwt__Key` invalidates all tokens                                                          |
+| Port 5433, 6379 or 7180 in use                                                 | Stop the other program using it                                                                                                            |
 
 ## Authentication
 
