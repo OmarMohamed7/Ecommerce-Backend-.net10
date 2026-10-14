@@ -4,25 +4,15 @@ using E_Commerce.Common;
 
 namespace E_Commerce.Middleware;
 
-public class ExceptionHandlerMiddleware
+public class ExceptionHandlerMiddleware(
+    RequestDelegate next,
+    IWebHostEnvironment env)
 {
-    private readonly IWebHostEnvironment _env;
-    private readonly ILogger<ExceptionHandlerMiddleware> _logger;
-    private readonly RequestDelegate _next;
-
-    public ExceptionHandlerMiddleware(RequestDelegate next, IWebHostEnvironment env,
-        ILogger<ExceptionHandlerMiddleware> logger)
-    {
-        _next = next;
-        _env = env;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception e)
         {
@@ -32,7 +22,6 @@ public class ExceptionHandlerMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        _logger.LogError(exception, exception.Message);
         context.Response.ContentType = "application/json";
 
         var statusCode = exception switch
@@ -45,7 +34,7 @@ public class ExceptionHandlerMiddleware
 
         context.Response.StatusCode = (int)statusCode;
 
-        var response = ApiResponse.Fail(_env.IsDevelopment() ? exception.Message : "Internal Server Error");
+        var response = ApiResponse.Fail(env.IsDevelopment() ? exception.Message : "Internal Server Error");
 
         var json = JsonSerializer.Serialize(response);
 

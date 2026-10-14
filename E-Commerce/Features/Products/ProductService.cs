@@ -1,13 +1,14 @@
+using E_Commerce.Common;
 using E_Commerce.Db;
 using Microsoft.EntityFrameworkCore;
-using E_Commerce.Common;
 
 namespace E_Commerce.Features.Products;
 
-public class ProductService(AppDbContext db) : IProductService
+public class ProductService(AppDbContext db, ILogger<ProductService> logger) : IProductService
 {
     public async Task<PagedResult<Product>> GetAll(ProductQueryParams queryParams)
     {
+        logger.LogInformation("Getting all products for {ProductQueryParams}", queryParams);
         var query = db.Products.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(queryParams.Search))
@@ -50,6 +51,8 @@ public class ProductService(AppDbContext db) : IProductService
 
     public async Task<Product?> GetById(int id)
     {
+        logger.LogInformation("Getting Product With Id {id}", id);
+
         return await db.Products
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
